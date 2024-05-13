@@ -3,7 +3,6 @@
 GameLogic::GameLogic()
     : grid{Grid()}, currentBlock{TetrominoBlock()}, nextBlock{TetrominoBlock()}, display{Display()}
 {
-    // Serial.println("In GAMELOGIC CONSTRUCT");
     currentBlock.setRandomShape();
     nextBlock.setRandomShape();
     LockedPiece = false;
@@ -24,9 +23,9 @@ void GameLogic::HandleInput(Controller &controller)
     byte Movement = 0;
     uint32_t parseButtons = 0;
     parseButtons = controller.getButtonStates();
-    uint8_t button2 = (parseButtons & 0x000000FF);       // Least significant byte (buf[0])
-    uint8_t button1 = (parseButtons & 0x0000FF00) >> 8;  // Second byte (buf[1])
-    uint8_t button0 = (parseButtons & 0x00FF0000) >> 16; // Third byte (buf[2])
+    uint8_t button2 = (parseButtons & 0x000000FF);
+    uint8_t button1 = (parseButtons & 0x0000FF00) >> 8;
+    uint8_t button0 = (parseButtons & 0x00FF0000) >> 16;
 
     // Handle button conditions
     if (button2 == 0x2F)
@@ -149,7 +148,7 @@ bool GameLogic::isSpace()
                 x = i + currentBlock.rowOffset;
                 y = j + currentBlock.columnOffset;
             }
-            // Checks lockedPieces[][] grid to see if there is a TetrominoBlock in that position
+            // Checks lockedPieces[] grid to see if there is a TetrominoBlock in that position
             if (grid.isCellEmpty(x, y) == false)
             {
                 return false;
@@ -196,7 +195,8 @@ void GameLogic::ConvertDataForDisplay()
 {
     uint16_t displayData[20] = {0};
 
-    // Get the correct bit values of the current state of the game and place it into displayData[x] array as a 10 bitsized value
+    // Get the correct bit values of the current state of the game and place it into 
+    // displayData[x] array as a 10 bitsized value
     for (byte row = 0; row < grid.numRows; row++)
     {
         displayData[row] |= (grid.grid[row] | grid.lockedPieces[row]);

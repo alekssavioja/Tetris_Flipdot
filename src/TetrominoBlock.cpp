@@ -16,22 +16,7 @@ void TetrominoBlock::UndoRotation()
     if(currentRotation != 0) currentRotation--;
     else currentRotation = 3;
 }
-/*
-bool TetrominoBlock::Place(byte (&grid)[20][10])
-{
-    for (byte row = 0; row < 4; row++)
-    {
-        for (byte column = 0; column < 4; column++)
-        {
-            // Checks each cell of the TetrominoBlock and moves them to grid with the correct offset 
-            if (shapePositions[currentRotation][row][column] == 1)
-            {
-                grid[row + rowOffset][column + columnOffset] = 1;
-            }
-        }
-    }
-    return true;
-}*/
+
 bool TetrominoBlock::Place(int (&grid)[20])
 {
     for (int8_t row = 0; row < 4; row++)
@@ -41,7 +26,7 @@ bool TetrominoBlock::Place(int (&grid)[20])
             // Checks each cell of the TetrominoBlock and moves them to grid with the correct offset 
             if ( (shapePositions[currentRotation][row] & (1 << (3 - column)) ) >= 1)
             {
-                grid[row + rowOffset] |= (1 << (9 - column - columnOffset)); // The 9 represents the grid.numColumns 0-9
+                grid[row + rowOffset] |= (1 << (9 - column - columnOffset));
             }
         }
     }
