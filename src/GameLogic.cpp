@@ -10,6 +10,7 @@ GameLogic::GameLogic()
     gameOver = false;
     lvl = 0;
     linesCleared = 0;
+    prevlvl = 0;
 }
 
 void GameLogic::PlacePiece()
@@ -26,12 +27,6 @@ void GameLogic::PrintGame()
 
 void GameLogic::HandleInput(Controller &controller)
 {
-    if (gameOver /* Add user input */)
-    {
-        gameOver = false;
-        ResetGame();
-    }
-
     byte Movement = 0;
     uint32_t parseButtons = 0;
     parseButtons = controller.getButtonStates();
@@ -66,10 +61,15 @@ void GameLogic::HandleInput(Controller &controller)
         RotateBlock();
         break;
     }
-    // if(!LockedPiece)
+
     PlacePiece();
     LockedPiece = false;
     RefreshDisplay();
+    if (gameOver && Movement > 0)
+    {
+        gameOver = false;
+        ResetGame();
+    }
 }
 
 void GameLogic::RotateBlock()
@@ -178,18 +178,24 @@ void GameLogic::LockBlock()
     currentBlock.columnOffset = nextBlock.columnOffset;
     currentBlock.rowOffset = nextBlock.rowOffset;
 
-    if (!isSpace())
+    if (!isSpace() && !display.endScreen)
     {
         gameOver = true;
         grid.CleanGrid();
         grid.CleanLockedPieces();
         display.GameOverText();
+        display.DisplayData();
     }
     nextBlock.setRandomShape();
 
     linesCleared += grid.ClearFullRows();
-    if ((linesCleared % 15) >= 0 && (linesCleared % 15) <= 4 && linesCleared > 4)
+    uint16_t currentlvl = (linesCleared / 10);
+
+    if (currentlvl > prevlvl) 
+    {
+        prevlvl = currentlvl;
         IncreaseDifficulty();
+    }
 }
 
 void GameLogic::ConvertDataForDisplay()
@@ -208,17 +214,6 @@ void GameLogic::ConvertDataForDisplay()
         nextBlockDATA[i] |= nextBlock.shapePositions[nextBlock.currentRotation][i];
     }
 
-    /*for (byte i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            if ((nextBlock.shapePositions[nextBlock.currentRotation][i] & (1 << (3 - j))) == 1)
-            {
-                nextBlockDATA[i + 1] |= (1 << (3 - j)); // Again reading from right to left
-            }
-        }
-    }*/
-
     display.UpdateDisplay(displayData, nextBlockDATA);
     display.UpdateUIInfo(linesCleared, lvl);
 }
@@ -227,6 +222,7 @@ void GameLogic::ResetGame()
 {
     currentBlock.setRandomShape();
     nextBlock.setRandomShape();
+    display.endScreen = false;
 
     grid.CleanGrid();
     grid.CleanLockedPieces();
@@ -248,7 +244,5 @@ int GameLogic::IncreaseSpeed()
 
 void GameLogic::IncreaseDifficulty()
 {
-    lvl = (lvl <= 9 ? lvl + 1 : 9);
-    // Serial.println("IN INCREASE DIFFICULTY");
-    // Serial.println(lvl);
+    lvl = (lvl < 9 ? lvl + 1 : 9);
 }

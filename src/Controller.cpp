@@ -16,10 +16,8 @@ void Controller::update()
 {
     if (usb.getUsbTaskState() != USB_STATE_RUNNING)
     {
-        Serial.flush();
-        delay(2500);
+        //Serial.flush();
         Serial.println(("USB device not running."));
-        delay(2500);
     }
 }
 
@@ -29,7 +27,7 @@ void Controller::Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf)
 
     if (len < 8)
     {
-        Serial.println(F("HID report length too short, skipping."));
+        //Serial.println(F("HID report length too short, skipping."));
         return; 
     }
     // Serial.println(F("Parse Buffer is : "));

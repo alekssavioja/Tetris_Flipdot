@@ -2,16 +2,16 @@
 
 Display::Display() : 
                     dataScreen1{0x80, 0x83, 0x01, 
-0x80, 0x5D, 0x44, 0x4C, 0x44, 0x6E, 0x66, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 0x8F},
                     dataScreen2{0x80, 0x83, 0x02,
-0x77, 0x7F, 0x34, 0x53, 0x30, 0x5E, 0x59, 0x7F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
+0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
 0x8F},
                     lineData1{0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F}, 
                     lineData2{0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F}, 
-                    dataMask1(0x7F), dataMask2(0x70), UIMask(0x0F), numbers{0}
+                    dataMask1(0x7F), dataMask2(0x70), UIMask(0x0F), numbers{0}, endScreen(0)
 {
 }
 
@@ -35,12 +35,10 @@ void Display::UpdateDisplay(uint16_t newData[20], byte next[4])
     dataScreen1[2] = 0x01;
     dataScreen2[2] = 0x02;
 
-    // Screen Data Pack. Just some "beautification" of the display :
+    // Displaying the values set in UiUpdate
     for(byte i = 0; i < 8; i++) {
-        dataScreen1[i+3] &= 0;
-        dataScreen2[i+3] &= 0;
-        dataScreen1[i+3] |= lineData1[i];
-        dataScreen2[i+3] |= lineData2[i];
+        dataScreen1[i+3] = lineData1[i];
+        dataScreen2[i+3] = lineData2[i];
     }
 
     // Actual Game grid value reflection :
@@ -69,30 +67,48 @@ void Display::UpdateUIInfo(uint16_t lines, byte lv)
     // Extract the lvl and cleared lines data
     //long numbData = 0;
     //numbData = GetNumber(lv);
-    long temp[3] = {0};
+    byte temp[3] = {0};
+
     // Update line Data
-    lineData1[0] = 0x7F;
-    lineData2[0] = 0x7F;
+    lineData1[0] = 0x0;
+    lineData2[0] = 0x0;
+
     for (int8_t i = 2; i >= 0; i--) 
     {
-        temp[i] = GetNumber((lines % 10));
-        //numbers[i] = lines % 10;
+        temp[i] = (lines % 10);
         lines /= 10;
     }
 
-    for(byte i = 0; i < 6; i++)
+    for(uint8_t i = 0; i < 6; i++)
     {
         // Update lvl Data
         dataScreen2[i+24] &= 0x70;
         dataScreen2[i+24] |= (byte)((GetNumber(lv) >> (4*(5-i))) & UIMask);
 
         // Update line Data
-        lineData1[i+1] = temp[0] > 0 ? (byte)((temp[0] >> ((4*(5-i))-3)) & 0x78) : 0x7F;
-        lineData2[i+1] = temp[2] > 0 ? (byte)((temp[2] >> ( 4*(5-i)))    & 0x0F) : 0x7F;   
+        // 0110 1001 0010 0001 1001 0110
+        //   15   11    7    3  <<1  <<5    i == 4 ja i == 5
+        lineData1[i+1] &= temp[0] > 0 ? 0x07 : 0x7F;
+        lineData1[i+1] |= temp[0] > 0 ? (byte)((GetNumber(temp[0]) >> ((4*(5-i))-3)) & 0x78) : 0x0;
 
-        lineData1[i+1] = temp[1] > 0 ? (byte)((temp[1] >> ((4*(5-i))+3)) & 0x3)  : 0x7F;
-        lineData2[i+1] = temp[1] > 0 ? (byte)((temp[1] >> ((4*(5-i))-3)) & 0x96) : 0x7F;
+        lineData2[i+1] &= temp[2] > 0 ? 0x70 : 0x7F;
+        lineData2[i+1] |= temp[2] > 0 ? (byte)((GetNumber(temp[2]) >> ( 4*(5-i)) )   & 0x0F) : 0x7F;   
+
+        lineData1[i+1] &= temp[1] > 0 ? 0x78 : 0x7F;
+        lineData1[i+1] |= temp[1] > 0 ? (byte)((GetNumber(temp[1]) >> ((4*(5-i))+2)) & 0x3)  : 0x0;
+
+        lineData2[i+1] &= temp[1] > 0 ? 0x0F : 0x7F;
+        if(i <= 3)
+        {
+            lineData2[i+1] |= temp[1] > 0 ? (byte)((GetNumber(temp[1]) >> ( ( 4*(4-i) ) -1 )) & 0x60)  : 0x0;
+        } else if (i == 4) {
+            lineData2[i+1] |= temp[1] > 0 ? (byte)((GetNumber(temp[1]) << 1) & 0x60)  : 0x0;
+        } else {
+            lineData2[i+1] |= temp[1] > 0 ? (byte)((GetNumber(temp[1]) << 5) & 0x60)  : 0x0;
+        }
+        
     }
+
     lineData1[7] = 0x7F;
     lineData2[7] = 0x7F;
 }
@@ -180,6 +196,8 @@ void Display::GameOverText()
 
     dataScreen1[28] |= (0b0011100 & dataMask1);
     dataScreen2[28] |= (0b0100100 & dataMask1);
+
+    endScreen = true;
 }
 
 long Display::GetNumber(byte request)

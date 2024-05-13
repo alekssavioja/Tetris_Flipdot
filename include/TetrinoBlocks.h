@@ -39,10 +39,10 @@ namespace TetrominoBlocks
     };
 
     static const byte O[4][4] PROGMEM = {
-        {0b1100, 0b1100, 0b0000, 0b0000}, // Default orientation
-        {0b1100, 0b1100, 0b0000, 0b0000}, // 90 degrees,  same as default
-        {0b1100, 0b1100, 0b0000, 0b0000}, // 180 degrees, same as default
-        {0b1100, 0b1100, 0b0000, 0b0000}  // 270 degrees, same as default
+        {0b0110, 0b0110, 0b0000, 0b0000}, // Default orientation
+        {0b0110, 0b0110, 0b0000, 0b0000}, // 90 degrees,  same as default
+        {0b0110, 0b0110, 0b0000, 0b0000}, // 180 degrees, same as default
+        {0b0110, 0b0110, 0b0000, 0b0000}  // 270 degrees, same as default
     };
 
     static const byte T[4][4] PROGMEM = {

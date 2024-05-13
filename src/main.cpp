@@ -13,8 +13,8 @@ unsigned long lastMoveTime = 0;
 unsigned long lastInputReadTime = 0;
 unsigned long lastInputProcessTime = 0;
 
-const long inputReadInterval = 100;
-unsigned long intervalForControls = 250;
+const long inputReadInterval = 85;
+unsigned long intervalForControls = 170;
 unsigned long forcemoveDownInterval = 800;
 
 GameLogic game = GameLogic();

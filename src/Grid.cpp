@@ -89,5 +89,5 @@ byte Grid::ClearFullRows()
             MoveRowDown(row, fullRows);
         }
     }
-    return fullRows;
+    return fullRows*6;
 }

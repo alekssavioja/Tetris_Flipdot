@@ -12,6 +12,7 @@ private:
     TetrominoBlock nextBlock;
     bool LockedPiece;
     byte lvl;
+    uint16_t prevlvl;
 
     void PlacePiece();
     void RotateBlock();

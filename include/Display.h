@@ -12,11 +12,13 @@ private:
     byte dataMask2; // 0x70 For Gamefield
     byte UIMask;    // 0x0F
     byte numbers[3];
+    
     long GetNumber(byte request);
     void ClearDisplayData();   
 
 public:
     Display();
+    bool endScreen;
     void UpdateDisplay(uint16_t newData[20], byte next[4]);
     void UpdateUIInfo(uint16_t lines, byte lv);
     void DisplayData();

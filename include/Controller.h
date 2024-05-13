@@ -7,8 +7,8 @@ class Controller : public HIDReportParser
 {
 private:
     HIDUniversal hid;
-    uint32_t buttonStates; 
     USB &usb;
+    uint32_t buttonStates; 
 
     void Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
 
