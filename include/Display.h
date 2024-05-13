@@ -11,7 +11,6 @@ private:
     byte dataMask1; // 0x7F For Gamefield
     byte dataMask2; // 0x70 For Gamefield
     byte UIMask;    // 0x0F
-    byte numbers[3];
     
     long GetNumber(byte request);
     void ClearDisplayData();   

@@ -11,7 +11,7 @@ Display::Display() :
 0x8F},
                     lineData1{0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F}, 
                     lineData2{0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F}, 
-                    dataMask1(0x7F), dataMask2(0x70), UIMask(0x0F), numbers{0}, endScreen(0)
+                    dataMask1(0x7F), dataMask2(0x70), UIMask(0x0F), endScreen(0)
 {
 }
 
@@ -65,8 +65,6 @@ void Display::UpdateDisplay(uint16_t newData[20], byte next[4])
 void Display::UpdateUIInfo(uint16_t lines, byte lv)
 {
     // Extract the lvl and cleared lines data
-    //long numbData = 0;
-    //numbData = GetNumber(lv);
     byte temp[3] = {0};
 
     // Update line Data
@@ -87,7 +85,7 @@ void Display::UpdateUIInfo(uint16_t lines, byte lv)
 
         // Update line Data
         // 0110 1001 0010 0001 1001 0110
-        //   15   11    7    3  <<1  <<5    i == 4 ja i == 5
+        //   15   11    7    3  <<1  <<5
         lineData1[i+1] &= temp[0] > 0 ? 0x07 : 0x7F;
         lineData1[i+1] |= temp[0] > 0 ? (byte)((GetNumber(temp[0]) >> ((4*(5-i))-3)) & 0x78) : 0x0;
 
@@ -112,14 +110,6 @@ void Display::UpdateUIInfo(uint16_t lines, byte lv)
     lineData1[7] = 0x7F;
     lineData2[7] = 0x7F;
 }
-
-/*
-lineData1[i+1] = numbers[0] > 0 ? (byte)((GetNumber(numbers[0]) >> ((4*(5-i))-3)) & 0x78) : 0x7F;
-lineData2[i+1] = numbers[2] > 0 ? (byte)((GetNumber(numbers[2]) >> ( 4*(5-i)))     & 0x0F) : 0x7F;   
-
-lineData1[i+1] = numbers[1] > 0 ? (byte)((GetNumber(numbers[1]) >> ((4*(5-i))+3)) & 0x3)  : 0x7F;
-lineData2[i+1] = numbers[1] > 0 ? (byte)((GetNumber(numbers[1]) >> ((4*(5-i))-3)) & 0x96) : 0x7F;
-*/
 
 void Display::ClearDisplayData()
 {
@@ -241,13 +231,6 @@ long Display::GetNumber(byte request)
 }
 
 /*
-Next Block on row 8-12
-L       on    row 14-16
-V       on    row 18-20
-Num     on    row 22-27
-*/
-
-/*
 Numbers
 0 == [1]: 110   ,[2]: 1001  ,[3]: 1011  ,[4]: 1101  ,[5]: 1001  ,[6]: 110
 1 == [1]: 10    ,[2]: 110   ,[3]: 10    ,[4]: 10    ,[5]: 10    ,[6]: 111
@@ -259,86 +242,4 @@ Numbers
 7 == [1]: 111   ,[2]: 1     ,[3]: 10    ,[4]: 111   ,[5]: 10    ,[6]: 10
 8 == [1]: 110   ,[2]: 1001  ,[3]: 110   ,[4]: 1001  ,[5]: 1001  ,[6]: 110
 9 == [1]: 111   ,[2]: 1001  ,[3]: 1111  ,[4]: 1     ,[5]: 1     ,[6]: 111
-*/
-
-/*
-Data BIT HIGH == White
-Data BIT LOW  == Black
-
-dataScreen1{0x80, 0x83, 0x00, // Commands and Address
-0x80, 0x5D, 0x44, 0x4C, 0x44, 0x6E, 0x66, 0x7F, 
-0x00, // [0] = 11
-0x00, // [1] = 12
-0x00, // [2] = 13
-0x00, // [3] = 14
-0x00, // [4] = 15
-0x00, // [5] = 16
-0x00, // [6] = 17
-0x00, // [7] = 18
-0x00, // [8] = 19
-0x00, // [9] = 20
-0x00, // [10] = 21
-0x00, // [11] = 22
-0x00, // [12] = 23
-0x00, // [13] = 24
-0x00, // [14] = 25
-0x00, // [15] = 26
-0x00, // [16] = 27
-0x00, // [17] = 28
-0x00, // [18] = 29
-0x00, // [19] = 30
-0x8F}; // End byte
-
-
-dataScreen2{0x80, 0x83, 0x01, // Commands and Address
-0x77, 0x7F, 0x34, 0x53, 0x30, 0x5E, 0x59, 0x7F,
-0x00, // [0] = 11
-0x00, // [1] = 12
-0x00, // [2] = 13
-0x00, // [3] = 14
-0x00, // [4] = 15
-0x00, // [5] = 16
-0x00, // [6] = 17
-0x00, // [7] = 18
-0x00, // [8] = 19
-0x00, // [9] = 20
-0x00, // [10] = 21
-0x00, // [11] = 22
-0x00, // [12] = 23
-0x00, // [13] = 24
-0x00, // [14] = 25
-0x00, // [15] = 26
-0x00, // [16] = 27
-0x00, // [17] = 28
-0x00, // [18] = 29
-0x00, // [19] = 30
-0x8F};  // End byte
-*/
-
-/*       
-// GA
-grid[1][j] = (0b0001110 0011000 & (1 << (13 - j))) ? 1 : 0;
-grid[2][j] = (0b0010000 0100100 & (1 << (13 - j))) ? 1 : 0;
-grid[3][j] = (0b0010110 0100100 & (1 << (13 - j))) ? 1 : 0;
-grid[4][j] = (0b0010010 0111100 & (1 << (13 - j))) ? 1 : 0;
-grid[5][j] = (0b0001110 0100100 & (1 << (13 - j))) ? 1 : 0;
-// ME
-grid[7][j] = (0b0010001 0011100 & (1 << (13 - j))) ? 1 : 0;
-grid[8][j] = (0b0011011 0010000 & (1 << (13 - j))) ? 1 : 0;
-grid[9][j] = (0b0010101 0011000 & (1 << (13 - j))) ? 1 : 0;
-grid[10][j] = (0b0010001 0010000 & (1 << (13 - j))) ? 1 : 0;
-grid[11][j] = (0b0010001 0011100 & (1 << (13 - j))) ? 1 : 0;
-grid[13][j] = (0b1111111 1111111 & (1 << (13 - j))) ? 1 : 0;
-// OV
-grid[15][j] = (0b0011100 0100010 & (1 << (13 - j))) ? 1 : 0;
-grid[16][j] = (0b0100010 0100010 & (1 << (13 - j))) ? 1 : 0;
-grid[17][j] = (0b0100010 0100010 & (1 << (13 - j))) ? 1 : 0;
-grid[18][j] = (0b0100010 0010100 & (1 << (13 - j))) ? 1 : 0;
-grid[19][j] = (0b0011100 0001000 & (1 << (13 - j))) ? 1 : 0;
-// ER
-grid[21][j] = (0b0011100 0111000 & (1 << (13 - j))) ? 1 : 0;
-grid[22][j] = (0b0010000 0100100 & (1 << (13 - j))) ? 1 : 0;
-grid[23][j] = (0b0011000 0111000 & (1 << (13 - j))) ? 1 : 0;
-grid[24][j] = (0b0010000 0100100 & (1 << (13 - j))) ? 1 : 0;
-grid[25][j] = (0b0011100 0100100 & (1 << (13 - j))) ? 1 : 0;
 */

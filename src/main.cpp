@@ -47,7 +47,6 @@ void loop()
     // Layer 1: Input Reading
     if (currentMillis - lastInputReadTime >= inputReadInterval)
     {
-        // game.controller.readInput();
         usb.Task();
         controller.update();
         lastInputReadTime = currentMillis;
@@ -57,14 +56,12 @@ void loop()
     if (currentMillis - lastInputProcessTime >= intervalForControls)
     {
         game.HandleInput(controller);
-        // game.PrintGame();
         lastInputProcessTime = currentMillis;
     }
 
     // Layer 3: Forced Movement -- Game difficulty
     if (currentMillis - lastMoveTime >= forcemoveDownInterval)
     {
-        // game.PrintGame();
         game.MoveBlockDown();
         game.RefreshDisplay();
         forcemoveDownInterval = game.IncreaseSpeed();

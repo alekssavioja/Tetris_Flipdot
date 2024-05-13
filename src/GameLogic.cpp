@@ -19,12 +19,6 @@ void GameLogic::PlacePiece()
     currentBlock.Place(grid.grid);
 }
 
-void GameLogic::PrintGame()
-{
-    grid.PrintGrid();    // Debugging thingy
-    Serial.println(" "); // Debugging thingy
-}
-
 void GameLogic::HandleInput(Controller &controller)
 {
     byte Movement = 0;

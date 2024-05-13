@@ -14,7 +14,7 @@ public:
     byte numRows;       // 20
     byte numColumns;    // 10
 
-    //byte grid[20][10]; // == 200 Bytes == 1600bit
+
     int grid[20];      // 0b 0000 0000 0000 0000
     int lockedPieces[20];
     
@@ -23,6 +23,5 @@ public:
     void PrintGrid();       // Debug
     bool isCellOutside(byte row, byte column);
     bool isCellEmpty(byte row, byte column);
-    //void GameOverGrid();
     byte ClearFullRows();
 };

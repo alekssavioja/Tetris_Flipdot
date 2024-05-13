@@ -30,7 +30,6 @@ public:
     uint16_t linesCleared;
     bool gameOver;
 
-    void PrintGame(); // Debug
     void HandleInput(Controller &controller);
     void MoveBlockDown();
     void ConvertDataForDisplay();
