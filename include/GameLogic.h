@@ -13,6 +13,7 @@ private:
     bool LockedPiece;
     byte lvl;
     uint16_t prevlvl;
+    uint16_t prevLines;
 
     void PlacePiece();
     void RotateBlock();
@@ -27,10 +28,11 @@ private:
 public:
     GameLogic();
     Display display;
+    Controller controller;
     uint16_t linesCleared;
     bool gameOver;
 
-    void HandleInput(Controller &controller);
+    void HandleInput();
     void MoveBlockDown();
     void ConvertDataForDisplay();
     void RefreshDisplay();

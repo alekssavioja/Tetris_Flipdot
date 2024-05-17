@@ -22,4 +22,5 @@ public:
     void UpdateUIInfo(uint16_t lines, byte lv);
     void DisplayData();
     void GameOverText();
+    void ResetData();
 };
