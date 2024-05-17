@@ -13,14 +13,11 @@ unsigned long lastMoveTime = 0;
 unsigned long lastInputReadTime = 0;
 unsigned long lastInputProcessTime = 0;
 
-const long inputReadInterval = 85;
+const long inputReadInterval = 65;
 unsigned long intervalForControls = 170;
 unsigned long forcemoveDownInterval = 800;
 
 GameLogic game = GameLogic();
-
-USB usb{};
-Controller controller{usb};
 
 void setup()
 {
@@ -29,14 +26,7 @@ void setup()
     seed += analogRead(A2) << 2;
     randomSeed(seed);
     Serial.begin(57600);
-
-    if (usb.Init() == -1)
-    {
-        Serial.println("USB Host did not start.");
-        while (1)
-            ; 
-    }
-    Serial.println("USB Host initialized.");
+    game.controller.begin();
 }
 
 
@@ -47,15 +37,14 @@ void loop()
     // Layer 1: Input Reading
     if (currentMillis - lastInputReadTime >= inputReadInterval)
     {
-        usb.Task();
-        controller.update();
+        game.controller.update();
         lastInputReadTime = currentMillis;
     }
 
     // Layer 2: Input handeling
     if (currentMillis - lastInputProcessTime >= intervalForControls)
     {
-        game.HandleInput(controller);
+        game.HandleInput();
         lastInputProcessTime = currentMillis;
     }
 

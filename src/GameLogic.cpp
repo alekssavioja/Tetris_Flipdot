@@ -1,7 +1,7 @@
 #include "GameLogic.h"
 
 GameLogic::GameLogic()
-    : grid{Grid()}, currentBlock{TetrominoBlock()}, nextBlock{TetrominoBlock()}, display{Display()}
+    : grid{Grid()}, currentBlock{TetrominoBlock()}, nextBlock{TetrominoBlock()}, display{Display()}, controller{Controller()}
 {
     currentBlock.setRandomShape();
     nextBlock.setRandomShape();
@@ -18,7 +18,7 @@ void GameLogic::PlacePiece()
     currentBlock.Place(grid.grid);
 }
 
-void GameLogic::HandleInput(Controller &controller)
+void GameLogic::HandleInput()
 {
     byte Movement = 0;
     uint32_t parseButtons = 0;
@@ -181,7 +181,7 @@ void GameLogic::LockBlock()
     }
     nextBlock.setRandomShape();
 
-    linesCleared += grid.ClearFullRows();
+    linesCleared += (linesCleared < 1000) ? grid.ClearFullRows() : 0;
     uint16_t currentlvl = (linesCleared / 10);
 
     if (currentlvl > prevlvl) 
@@ -209,14 +209,22 @@ void GameLogic::ConvertDataForDisplay()
     }
 
     display.UpdateDisplay(displayData, nextBlockDATA);
-    display.UpdateUIInfo(linesCleared, lvl);
+    if(linesCleared != prevLines || linesCleared == 0)
+    {
+        display.UpdateUIInfo(linesCleared, lvl);
+        prevLines = linesCleared;
+    }
 }
 
 void GameLogic::ResetGame()
 {
     currentBlock.setRandomShape();
     nextBlock.setRandomShape();
+    display.ResetData();
     display.endScreen = false;
+    linesCleared = 0;
+    lvl = 0;
+    prevlvl = 0;
 
     grid.CleanGrid();
     grid.CleanLockedPieces();
@@ -233,10 +241,10 @@ void GameLogic::RefreshDisplay()
 
 int GameLogic::IncreaseSpeed()
 {
-    return (800 - (lvl * 50));
+    return (800 - (lvl * 52));
 }
 
 void GameLogic::IncreaseDifficulty()
 {
-    lvl = (lvl < 9 ? lvl + 1 : 9);
+    lvl += (lvl < 9 ? 1 : 0);
 }
